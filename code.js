@@ -1,6 +1,24 @@
 var canvas;
 var canvasContext;
-var ballX = 50;
+var ballX = 50;     //ball start position left/right
+var ballY = 50;     //ball start position up/down
+var ballSpeedX = 10;    //speed left/right
+var ballSpeedY = 4;     //speed up/down
+
+var paddle1Y = 210;
+const PADDLE_HEIGHT = 100;
+
+function calculateMousePos(evt)
+{
+    var rect = canvas.getBoundingClientRect();
+    var root = document.documentElement;
+    var mouseX = evt.clientX - rect.left - root.scrollLeft;
+    var mouseY = evt.clientY - rect.top - root.scrollTop;
+    return {
+        x: mouseX,
+        y: mouseY
+    };
+}
 
 window.onload = function(){
     console.log("Hellow World!");
@@ -8,32 +26,80 @@ window.onload = function(){
     canvasContext = canvas.getContext('2d');
 
     var framesPerSecond = 30;
-    // setInterval(drawEverything, 1000/framesPerSecond); 
+    setInterval(function()  //callBoth()
+    {
+        moveEverything();
+        drawEverything(); 
+    }, 1000/framesPerSecond); 
+    // drawEverything();
+
+    canvas.addEventListener('mousemove',
+        function(evt)
+        {
+            var mousePos = calculateMousePos(evt)
+            paddle1Y = mousePos.y;
+        });
+}
+
+function callBoth()
+{
+    moveEverything();
     drawEverything();
 }
 
+function moveEverything() 
+{
+    ballX = ballX + ballSpeedX;
+    ballY = ballY + ballSpeedY;
+
+    if (ballX > canvas.width)
+    {
+        ballSpeedX = -ballSpeedX;   //once hit right wall, ball will turn around
+    }
+    if (ballX < 0)
+    {
+        ballSpeedX = -ballSpeedX;   //once hit left wall, ball will turn around
+    }
+    if (ballY > canvas.height)
+    {
+        ballSpeedY = -ballSpeedY;   //once hit bottom wall, ball will turn around
+    }
+    if (ballY < 0)
+    {
+        ballSpeedY = -ballSpeedY;   //once hit top wall, ball will turn around
+    }
+}
 
 // momement code separated into another function
 function drawEverything()
 {
-    ballX = ballX + 5;
+    //background
+    colorRect(0,0,canvas.width,canvas.height,'grey');
+    
+    //left player paddle (computer)
+    colorRect(0,210,15,100,'turquoise');
+    
+    //right player paddle (you)
+    colorRect(canvas.width-15,paddle1Y,15,100,'turquoise');
 
-    console.log(ballX);
-    canvasContext.fillStyle = 'grey';
-    canvasContext.fillRect(0,0,canvas.width,canvas.height);
+    //ball
+    colorCircle(ballX, ballY, 10,'chartreuse');
     
-    canvasContext.fillStyle = 'turquoise';
-    canvasContext.fillRect(0,210,15,100);
-    
-    canvasContext.fillStyle = 'chartreuse';
-    canvasContext.fillRect(ballX,100,15,10);
 }
 
 
+//template for rectangular shapes
+function colorRect(X,Y,width,height,drawColor)
+{
+    canvasContext.fillStyle = drawColor;
+    canvasContext.fillRect(X,Y,width,height);
+}
 
-
-
-
-
-console.log("Hello World!");
-console.log(canvas);
+//templage for circular shapes
+function colorCircle(centerX, centerY, radius, drawColor)
+{
+    canvasContext.fillStyle = drawColor;
+    canvasContext.beginPath();
+    canvasContext.arc(centerX,centerY,radius,0, Math.PI*2, true);
+    canvasContext.fill();
+}
