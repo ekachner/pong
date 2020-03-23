@@ -6,7 +6,10 @@ var ballSpeedX = 10;    //speed left/right
 var ballSpeedY = 4;     //speed up/down
 
 var paddle1Y = 210;
+var paddle2Y = 210;
 const PADDLE_HEIGHT = 100;
+const PADDLE_THICKNESS = 10;
+const OVERLAP = 5;
 
 function calculateMousePos(evt)
 {
@@ -37,24 +40,34 @@ window.onload = function(){
         function(evt)
         {
             var mousePos = calculateMousePos(evt)
-            paddle1Y = mousePos.y;
+            paddle1Y = mousePos.y-(PADDLE_HEIGHT/2);
         });
 }
 
-function callBoth()
+
+function ballReset()
 {
-    moveEverything();
-    drawEverything();
+    ballSpeedX = -ballSpeedX;
+    ballX = canvas.width/2;
+    ballY = canvas.height/2;
 }
+
+
 
 function moveEverything() 
 {
+    
     ballX = ballX + ballSpeedX;
     ballY = ballY + ballSpeedY;
 
-    if (ballX > canvas.width)
+    if (ballX > canvas.width - (PADDLE_THICKNESS + OVERLAP))
     {
-        ballSpeedX = -ballSpeedX;   //once hit right wall, ball will turn around
+        if (ballY > paddle1Y + OVERLAP && ballY < paddle1Y + PADDLE_HEIGHT + OVERLAP)
+        {
+            ballSpeedX = -ballSpeedX; 
+        } else {
+            ballReset();
+        }    //if ball hits above or below paddle, it will reset. If it hits the paddle, ball will turn around.
     }
     if (ballX < 0)
     {
@@ -77,10 +90,10 @@ function drawEverything()
     colorRect(0,0,canvas.width,canvas.height,'grey');
     
     //left player paddle (computer)
-    colorRect(0,210,15,100,'turquoise');
+    colorRect(0,paddle2Y,PADDLE_THICKNESS,PADDLE_HEIGHT,'turquoise');
     
     //right player paddle (you)
-    colorRect(canvas.width-15,paddle1Y,15,100,'turquoise');
+    colorRect(canvas.width-PADDLE_THICKNESS,paddle1Y,PADDLE_THICKNESS,PADDLE_HEIGHT,'turquoise');
 
     //ball
     colorCircle(ballX, ballY, 10,'chartreuse');
