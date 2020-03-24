@@ -2,7 +2,7 @@ var canvas;
 var canvasContext;
 var ballX = 50;     //ball start position left/right
 var ballY = 50;     //ball start position up/down
-var ballSpeedX = 15;    //speed left/right
+var ballSpeedX = 10;    //speed left/right
 var ballSpeedY = 4;     //speed up/down
 
 var player1Score = 0;   //you
@@ -11,8 +11,8 @@ const WINNING_SCORE = 3;
 
 var showingWinScreen = false;
 
-var paddle1Y = 210;     //You  Y location start
-var paddle2Y = 210;     //Computer   Y location start
+var paddle1Y = 210;     //You  paddle start location
+var paddle2Y = 210;     //Computer  paddle start location
 const PADDLE_HEIGHT = 100;
 const PADDLE_THICKNESS = 10;
 const RADIUS = 10;  
@@ -28,6 +28,16 @@ function calculateMousePos(evt)
         x: mouseX,
         y: mouseY
     };
+}
+
+function handleMouseClick(evt)
+{
+    if(showingWinScreen)
+    {
+        player1Score = 0;
+        player2Score = 0;
+        showingWinScreen = false;
+    }
 }
 
 window.onload = function(){
@@ -49,15 +59,15 @@ window.onload = function(){
             var mousePos = calculateMousePos(evt)
             paddle1Y = mousePos.y-(PADDLE_HEIGHT/2);
         });
+
+    canvas.addEventListener('mousedown',handleMouseClick)
 }
 
 
 function ballReset()
 {
-    if(player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE)
+    if(player1Score == WINNING_SCORE || player2Score == WINNING_SCORE)
     {
-        player1Score = 0;
-        player2Score = 0;
         showingWinScreen = true;
     }
 
@@ -88,7 +98,7 @@ function moveEverything()
     ballX += ballSpeedX;
     ballY += ballSpeedY;
 
-    if (ballX > canvas.width - PADDLE_THICKNESS)
+    if (ballX > canvas.width)
     {
         if (ballY > (paddle1Y) && ballY < paddle1Y + PADDLE_HEIGHT)
         {
@@ -126,18 +136,35 @@ function moveEverything()
     }
 }
 
+
+function drawNew() 
+{
+    for(var i=0;i<canvas.height; i+=40)
+    {
+        colorRect(canvas.width/2-1,i,2,20,'turquoise');
+    }
+}
+
 // all things visual
 function drawEverything()
 {
-    // next line blanks out screen with grey
-    colorRect(0,0,canvas.width,canvas.height,'grey');
+    colorRect(0,0,canvas.width,canvas.height,'grey');  //grey background
 
     if (showingWinScreen) 
     {
+        ballSpeedX = 0;
         canvasContext.fillStyle = 'turquoise';
-        canvasContext.fillText("click to continue",100, 100);
+
+        if (player1Score == WINNING_SCORE)
+        {
+            canvasContext.fillText("You won!", 250, canvas.height/4);
+        } else if (player2Score == WINNING_SCORE)
+        {
+            canvasContext.fillText ("Computer Won", 450,canvas.height/4);
+        }
+
+        canvasContext.fillText("click to continue",canvas.width/2 - 45, canvas.height/2);
         return;
-        console.log("winner");
     }
 
 
@@ -153,9 +180,9 @@ function drawEverything()
     //ball
     colorCircle(ballX, ballY, RADIUS,'chartreuse');
 
+    //player scores
     canvasContext.fillText(player1Score,canvas.width/2 + 100, 100);
     canvasContext.fillText(player2Score,canvas.width/2 - 100, 100);
-    
 }
 
 
