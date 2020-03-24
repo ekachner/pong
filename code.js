@@ -7,7 +7,7 @@ var ballSpeedY = 4;     //speed up/down
 
 var player1Score = 0;   //you
 var player2Score = 0;   //computer
-const WINNING_SCORE = 5;
+const WINNING_SCORE = 1;
 
 var showingWinScreen = false;
 
@@ -155,15 +155,16 @@ function drawEverything()
         ballSpeedX = 0;
         canvasContext.fillStyle = 'turquoise';
 
+        canvasContext.textAlign = "center";
         if (player1Score == WINNING_SCORE)
         {
-            canvasContext.fillText("You won!", canvas.width/2-30, canvas.height/4);
+            canvasContext.fillText("You won!", canvas.width/2, canvas.height/4);
         } else if (player2Score == WINNING_SCORE)
         {
-            canvasContext.fillText ("Computer Won", canvas.width/2-43,canvas.height/4);
+            canvasContext.fillText ("Computer Won", canvas.width/2,canvas.height/4);
         }
 
-        canvasContext.fillText("click to continue",canvas.width/2 - 45, canvas.height/2);
+        canvasContext.fillText("click to continue",canvas.width/2, canvas.height/2);
         return;
     }
 
@@ -184,8 +185,9 @@ function drawEverything()
     colorCircle(ballX, ballY, 10,'chartreuse');
 
     //player scores
+    canvasContext.font = "20px Verdana";
     canvasContext.fillText(player1Score,canvas.width/2 + 100, 100);
-    canvasContext.fillText(player2Score,canvas.width/2 - 100, 100);
+    canvasContext.fillText(player2Score,canvas.width/2 - 110, 100);
 }
 
 
