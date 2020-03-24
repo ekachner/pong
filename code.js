@@ -7,7 +7,7 @@ var ballSpeedY = 4;     //speed up/down
 
 var player1Score = 0;   //you
 var player2Score = 0;   //computer
-const WINNING_SCORE = 10;
+const WINNING_SCORE = 15;
 
 var paddle1Y = 210;     //You  Y location start
 var paddle2Y = 210;     //Computer   Y location start
