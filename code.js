@@ -2,12 +2,14 @@ var canvas;
 var canvasContext;
 var ballX = 50;     //ball start position left/right
 var ballY = 50;     //ball start position up/down
-var ballSpeedX = 10;    //speed left/right
+var ballSpeedX = 15;    //speed left/right
 var ballSpeedY = 4;     //speed up/down
 
 var player1Score = 0;   //you
 var player2Score = 0;   //computer
-const WINNING_SCORE = 15;
+const WINNING_SCORE = 3;
+
+var showingWinScreen = false;
 
 var paddle1Y = 210;     //You  Y location start
 var paddle2Y = 210;     //Computer   Y location start
@@ -56,6 +58,7 @@ function ballReset()
     {
         player1Score = 0;
         player2Score = 0;
+        showingWinScreen = true;
     }
 
     ballSpeedX = -ballSpeedY;
@@ -80,7 +83,7 @@ function computerPlay()
 
 function moveEverything() 
 {
-    computerPlay();
+    //computerPlay();
 
     ballX += ballSpeedX;
     ballY += ballSpeedY;
@@ -126,6 +129,18 @@ function moveEverything()
 // all things visual
 function drawEverything()
 {
+    // next line blanks out screen with grey
+    colorRect(0,0,canvas.width,canvas.height,'grey');
+
+    if (showingWinScreen) 
+    {
+        canvasContext.fillStyle = 'turquoise';
+        canvasContext.fillText("click to continue",100, 100);
+        return;
+        console.log("winner");
+    }
+
+
     //background
     colorRect(0,0,canvas.width,canvas.height,'grey');
     
@@ -151,7 +166,7 @@ function colorRect(X,Y,width,height,drawColor)
     canvasContext.fillRect(X,Y,width,height);
 }
 
-//templage for circular shapes
+//template for circular shapes
 function colorCircle(centerX, centerY, radius, drawColor)
 {
     canvasContext.fillStyle = drawColor;
