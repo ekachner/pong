@@ -7,7 +7,7 @@ var ballSpeedY = 4;     //speed up/down
 
 var player1Score = 0;   //you
 var player2Score = 0;   //computer
-const WINNING_SCORE = 1;
+const WINNING_SCORE = 5;
 
 var showingWinScreen = false;
 
