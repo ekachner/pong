@@ -7,7 +7,7 @@ var ballSpeedY = 4;     //speed up/down
 
 var player1Score = 0;   //you
 var player2Score = 0;   //computer
-const WINNING_SCORE = 3;
+const WINNING_SCORE = 5;
 
 var showingWinScreen = false;
 
@@ -15,7 +15,7 @@ var paddle1Y = 210;     //You  paddle start location
 var paddle2Y = 210;     //Computer  paddle start location
 const PADDLE_HEIGHT = 100;
 const PADDLE_THICKNESS = 10;
-const RADIUS = 10;  
+const PADDLE_OVERHANG = 15;  
 
 
 function calculateMousePos(evt)
@@ -37,6 +37,7 @@ function handleMouseClick(evt)
         player1Score = 0;
         player2Score = 0;
         showingWinScreen = false;
+        ballSpeedX = 10; 
     }
 }
 
@@ -46,12 +47,11 @@ window.onload = function(){
     canvasContext = canvas.getContext('2d');
 
     var framesPerSecond = 30;
-    setInterval(function()  //callBoth()
+    setInterval(function() 
     {
         moveEverything();
         drawEverything(); 
     }, 1000/framesPerSecond); 
-    // drawEverything();
 
     canvas.addEventListener('mousemove',
         function(evt)
@@ -60,8 +60,8 @@ window.onload = function(){
             paddle1Y = mousePos.y-(PADDLE_HEIGHT/2);
         });
 
-    canvas.addEventListener('mousedown',handleMouseClick)
-}
+    canvas.addEventListener('mousedown',handleMouseClick);
+};
 
 
 function ballReset()
@@ -71,20 +71,20 @@ function ballReset()
         showingWinScreen = true;
     }
 
-    ballSpeedX = -ballSpeedY;
+    ballSpeedX = -ballSpeedX;
     ballX = canvas.width/2;
     ballY = canvas.height/2;
 }
 
 
-//this will ignore paddle chasing when it's 35 pixels above or below center (70 pixel span)
+//this will ignore paddle chasing when it's 30 pixels above or below center (60 pixel span)
 function computerPlay()
 {
     var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
-    if (paddle2YCenter < ballY - 35)    
+    if (paddle2YCenter < ballY - 30)    
     {
         paddle2Y += 10;
-    } else if (paddle2YCenter > ballY + 35)
+    } else if (paddle2YCenter > ballY + 30)
     {
         paddle2Y -= 10;
     }
@@ -93,33 +93,33 @@ function computerPlay()
 
 function moveEverything() 
 {
-    //computerPlay();
+    computerPlay();
 
     ballX += ballSpeedX;
     ballY += ballSpeedY;
 
-    if (ballX > canvas.width)
+    if (ballX > canvas.width - PADDLE_OVERHANG)
     {
-        if (ballY > (paddle1Y) && ballY < paddle1Y + PADDLE_HEIGHT)
+        if (ballY > paddle1Y - PADDLE_OVERHANG && ballY < paddle1Y + PADDLE_HEIGHT + PADDLE_OVERHANG)
         {
             ballSpeedX = -ballSpeedX; 
 
-            var deltaY = ballY - (paddle1Y + PADDLE_HEIGHT/2);      //mixes trajectory of ball when hit in particular location of paddle.
-            ballSpeedY = deltaY * .33;  //.33 makes the speed a little less crazy and moderates it.
+            var delta1Y = ballY - (paddle1Y + PADDLE_HEIGHT/2);      //mixes trajectory of ball when hit in particular location of paddle.
+            ballSpeedY = delta1Y * .33;  //.33 makes the speed a little less crazy and moderates it.
         } else {
             
             player2Score += 1;  //must be before ballReset()
             ballReset();
         }    //if ball hits above or below "you" paddle, it will reset and give computer a point. If it hits the paddle, ball will turn around.
     }
-    if (ballX < 0)
+    if (ballX < PADDLE_OVERHANG)
     {
-        if (ballY > (paddle2Y + RADIUS) && ballY < paddle2Y + (PADDLE_HEIGHT + RADIUS))
+        if (ballY > paddle2Y - PADDLE_OVERHANG && ballY < paddle2Y + PADDLE_HEIGHT + PADDLE_OVERHANG)
         {
             ballSpeedX = -ballSpeedX; 
 
-            var deltaY = ballY - (paddle2Y + PADDLE_HEIGHT/2);      //mixes trajectory of ball when hit in particular location of paddle.
-            ballSpeedY = deltaY * .33;  //.33 makes the speed a little less crazy and moderates it.
+            var delta2Y = ballY - (paddle2Y + PADDLE_HEIGHT/2);      //mixes trajectory of ball when hit in particular location of paddle.
+            ballSpeedY = delta2Y * .33;  //.33 makes the speed a little less crazy and moderates it.
         } else {
             
             player1Score += 1;  //must be before ballReset();
@@ -137,7 +137,7 @@ function moveEverything()
 }
 
 
-function drawNew() 
+function drawNet() 
 {
     for(var i=0;i<canvas.height; i+=40)
     {
@@ -157,20 +157,23 @@ function drawEverything()
 
         if (player1Score == WINNING_SCORE)
         {
-            canvasContext.fillText("You won!", 250, canvas.height/4);
+            canvasContext.fillText("You won!", canvas.width/2-30, canvas.height/4);
         } else if (player2Score == WINNING_SCORE)
         {
-            canvasContext.fillText ("Computer Won", 450,canvas.height/4);
+            canvasContext.fillText ("Computer Won", canvas.width/2-43,canvas.height/4);
         }
 
         canvasContext.fillText("click to continue",canvas.width/2 - 45, canvas.height/2);
         return;
     }
 
+    
 
     //background
     colorRect(0,0,canvas.width,canvas.height,'grey');
-    
+
+    drawNet();
+
     //left player paddle (computer)
     colorRect(0,paddle2Y,PADDLE_THICKNESS,PADDLE_HEIGHT,'turquoise');
     
@@ -178,7 +181,7 @@ function drawEverything()
     colorRect(canvas.width-PADDLE_THICKNESS,paddle1Y,PADDLE_THICKNESS,PADDLE_HEIGHT,'turquoise');
 
     //ball
-    colorCircle(ballX, ballY, RADIUS,'chartreuse');
+    colorCircle(ballX, ballY, 10,'chartreuse');
 
     //player scores
     canvasContext.fillText(player1Score,canvas.width/2 + 100, 100);
